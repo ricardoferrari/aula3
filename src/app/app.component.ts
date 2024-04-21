@@ -12,8 +12,8 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'aula3';
   workerStatus = '';
+  content: number[][] = [[0,0,0],[0,0,0],[0,0,0]];
 
-  private board: Board = new Board();
   private worker: Worker | undefined;
   constructor() {
     if (typeof Worker !== 'undefined') {
@@ -25,21 +25,13 @@ export class AppComponent {
       };
     }
   }
+
   runWorker() {
-    this.worker?.postMessage('hello');
+    this.worker?.postMessage(this.content);
   }
 
-}
-
-class Board {
-  value: number[] = [];
-  constructor(value: number = 0, width: number = 0, height: number = 0) {
-    for (let i = 0; i < width * height; i++) {
-      this.value[i] = value;
-    }
+  setCell(x: number,y: number) {
+    this.content[y][x] = 1;
   }
 
-  get(x: number, y: number): number {
-    return this.value[x + y];
-  }
 }

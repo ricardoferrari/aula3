@@ -1,10 +1,15 @@
+import Board from './Board';
+
 addEventListener('message', ({ data }) => {
-  let lotery = 0;
-  let iteration = 0;
-  while (((Math.sqrt(lotery)/2) + 15) != 50) {
-    lotery = Math.round(Math.random()*100000);
-    iteration++;
-  }
-  const response = `Trial ${iteration} and ${lotery}`;
-  postMessage(response);
+  const board: Board = new Board(data, 3);
+
+  const winner1 = board.someoneWonAnyLine();
+  const response1 = `Has winner line ${winner1} and ${board.playerWon}`;
+  postMessage(response1);
+  const winner2 = board.someoneWonAnyColumn();
+  const response2 = `Has winner column ${winner2} and ${board.playerWon}`;
+  postMessage(response2);
+  const winner3 = board.someoneWonAnyDiagonal();
+  const response3 = `Has winner diagonal ${winner3} and ${board.playerWon}`;
+  postMessage(response3);
 });

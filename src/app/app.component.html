@@ -1,6 +1,12 @@
 <div class="chessboard">
   <div *ngFor="let row of [0, 1, 2]; let j" class="row">
-    <div *ngFor="let col of [0, 1, 2]; let i" class="cell" [ngClass]="{ 'black': (row + col) % 2 === 0 }">{{ i + '' + j }}</div>
+    <div
+      *ngFor="let col of [0, 1, 2]; let i"
+      class="cell"
+      [ngClass]="{ 'black': (row + col) % 2 === 0 }"
+      (click)="setCell(i,j)">
+        {{ content[j][i] }}
+    </div>
   </div>
 </div>
 
