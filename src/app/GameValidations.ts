@@ -28,12 +28,11 @@ export class GameValidations {
   }
 
   nextAvailableCell(current: Play): Play | false {
-    const initial = current.y * this.size + current.x;
-    console.log('Initial', initial, this.virtualContent);
-    for (let j = initial; j < Math.pow(this.size, 2); j++) {
+    const initial = current.y * (this.size + 1) + current.x;
+    console.log('Initial', initial);
+    for (let j = initial; j < Math.pow(this.size + 1, 2); j++) {
       const x = j % (this.size + 1);
       const y = Math.floor(j / (this.size + 1));
-      console.log('x e y:', x, y, j, this.virtualContent[y][x] === 0);
       if (this.virtualContent[y][x] === 0) {
         return {x, y};
       }

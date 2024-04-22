@@ -11,17 +11,30 @@ export default class ArtificialPlayer extends GameValidations {
 
   play(): Play {
     const deep = this.getDeep();
-    const next = this.nextAvailableCell({x: 0, y: 0});
-    this.findPlay(deep, next.x, next.y, Players.AI);
+    this.findPlay(deep, 0, 0, Players.AI);
     console.log('Solucao', this.bestSnapshots);
     return {x: 0, y: 0};
   }
 
-  findPlay(deep: number, x: number, y: number, player: Players): Result {
-    const next = this.nextAvailableCell({x: x, y: y});
-    while (next && this.virtualContent[y][x] === 0) {
-      const result = this.makePlay(deep, x, y, player);
-      return result;
+  findPlay(deep: number, x: number, y: number, player: Players): void {
+    let limiter = 0;
+    let next: Play | false = this.nextAvailableCell({x, y});
+    while (next && this.virtualContent[next.y][next.x] === 0 && limiter < 20) {
+      limiter++;
+      const result = this.makePlay(deep, next.x, next.y, player);
+      console.log('Next', next);
+      console.log('Snapshot', this.bestSnapshots);
+      console.log('Result', result);
+      if (result === Result.WIN) {
+        break;
+      } else {
+        const lastX = next.x;
+        const lastY = next.y;
+        next = this.nextAvailableCell({x: next.x, y: next.y});
+        this.virtualContent[lastY][lastX] = 0;
+        const failedStep: Play | undefined = this.steps.pop();
+        console.log('Failed', failedStep);
+      }
     }
   }
 
@@ -39,6 +52,7 @@ export default class ArtificialPlayer extends GameValidations {
     //   const next = this.nextAvailableCell(lastStep);
     //   return this.findPlay(deep - 1, next.x, next.y, player === Players.AI ? Players.HUMAN : Players.AI);
     } else {
+      // Validar se realmente é melhor do que o anterior
       this.bestSnapshots = Array.from(this.steps);
       return Result.DRAW;
     }
