@@ -17,7 +17,7 @@ export class AppComponent {
 
   content: Board = new Board([
     [PlayersEnum.AI, PlayersEnum.HUMAN, PlayersEnum.HUMAN],
-    [PlayersEnum.NONE, PlayersEnum.AI, PlayersEnum.AI],
+    [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.AI],
     [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.AI]
   ]);
 
@@ -35,6 +35,10 @@ export class AppComponent {
 
   runWorker() {
     this.worker?.postMessage(this.content);
+  }
+
+  resetBoard() {
+    this.content.reset(3);
   }
 
   setCell(x: number,y: number) {
