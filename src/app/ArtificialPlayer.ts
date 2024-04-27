@@ -8,52 +8,56 @@ export default class ArtificialPlayer extends GameValidations {
   steps: Step[] = [];
   bestSnapshots: Step[] = [];
   lastFailedStep: Step | undefined;
+  limiter: number;
 
   play(): Play {
     const deep = this.getDeep();
+    this.limiter = 0;
     this.findPlay(deep, 0, 0, Players.AI);
     console.log('Solucao', this.bestSnapshots);
     return {x: 0, y: 0};
   }
 
-  findPlay(deep: number, x: number, y: number, player: Players): void {
-    let limiter = 0;
+  findPlay(deep: number, x: number, y: number, player: Players): Result {
     let next: Play | false = this.nextAvailableCell({x, y});
-    while (next && this.virtualContent[next.y][next.x] === 0 && limiter < 20) {
-      limiter++;
+    while (next && this.virtualContent[next.y][next.x] === 0 && this.limiter < 40) {
+      this.limiter++;
       const result = this.makePlay(deep, next.x, next.y, player);
       console.log('Next', next);
       console.log('Snapshot', this.bestSnapshots);
       console.log('Result', result);
       if (result === Result.WIN) {
-        break;
+        return Result.WIN;
       } else {
         const lastX = next.x;
         const lastY = next.y;
-        next = this.nextAvailableCell({x: next.x, y: next.y});
         this.virtualContent[lastY][lastX] = 0;
         const failedStep: Play | undefined = this.steps.pop();
+        next = this.nextAvailableCell({ x: next.x, y: next.y});
         console.log('Failed', failedStep);
       }
     }
+    return Result.DRAW;
   }
 
-  makePlay(deep: number, x: number, y: number, player: Players): Result {
-    this.virtualContent[y][x] = player;
-    this.steps.push({player, deep, x, y});
+  makePlay(deep: number, _x: number, _y: number, player: Players): Result {
+    this.virtualContent[_y][_x] = player;
+    this.steps.push({player, deep, x: _x, y: _y});
     if (this.didWon()) {
       this.bestSnapshots = Array.from(this.steps);
       return Result.WIN;
     } else if (this.didLoose()) {
       this.lastFailedStep = this.steps.pop();
       return Result.LOOSE;
-    // } else if (deep > 0) {
-    //   const lastStep: Play = (this.lastFailedStep?.deep === (deep - 1)) ? {x: this.lastFailedStep.x, y: this.lastFailedStep.y } : {x: 0, y: 0};
-    //   const next = this.nextAvailableCell(lastStep);
-    //   return this.findPlay(deep - 1, next.x, next.y, player === Players.AI ? Players.HUMAN : Players.AI);
+    } else if (deep > 0) {
+      const next = this.nextAvailableCell({x: _x, y: _y});
+      if (next) {
+        return this.findPlay(deep - 1, 0, 0, player === Players.AI ? Players.HUMAN : Players.AI);
+      }
+      return Result.DRAW;
     } else {
       // Validar se realmente é melhor do que o anterior
-      this.bestSnapshots = Array.from(this.steps);
+      if (this.bestSnapshots.length > this.steps.length) this.bestSnapshots = Array.from(this.steps);
       return Result.DRAW;
     }
   }
@@ -67,15 +71,4 @@ export interface Play {
 interface Step extends Play {
   player: number;
   deep: number;
-}
-
-enum Result {
-  WIN = 1,
-  LOOSE = 2,
-  DRAW = 3
-}
-
-enum Players {
-  AI = 2,
-  HUMAN = 1
 }
