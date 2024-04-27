@@ -18,8 +18,17 @@ export class Board {
   }
 
   addMove(player: PlayersEnum, move: Move) {
+    console.log('Board reset:', this.cells);
     if (this.cells[move.y][move.x] === PlayersEnum.NONE) {
       this.cells[move.y][move.x] = player;
     }
+  }
+
+  reset(size: number) {
+    this.cells = [
+      [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.NONE],
+      [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.NONE],
+      [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.NONE]
+    ];
   }
 }
