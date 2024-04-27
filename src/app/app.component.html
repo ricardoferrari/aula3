@@ -5,7 +5,7 @@
       class="cell"
       [ngClass]="{ 'black': (row + col) % 2 === 0 }"
       (click)="setCell(i,j)">
-        {{ content[j][i] }}
+        {{ content.cells[j][i] }}
     </div>
   </div>
 </div>

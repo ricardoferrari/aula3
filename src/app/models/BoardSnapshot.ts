@@ -1,14 +1,12 @@
 import { PlayersEnum } from "../enums/players.enum";
-import { ResultEnum } from "../enums/result.enum";
-import { didLoose, didWon } from "../functions";
-import { Move } from "./Move";
+import { Move } from "../interfaces/Move";
+import { Board } from "./Board";
 
-export class BoardSnapshot {
-  cells: PlayersEnum[][];
+export class BoardSnapshot extends Board {
   cellsLocked: boolean[];
 
   constructor(_cells: PlayersEnum[][]) {
-    this.cells = Array.from(_cells);
+    super(_cells);
     this.cellsLocked = Array(this.cells.flat.length).fill(false);
     this.cellsLocked = this.cells.flat(1).map(cell => cell !== PlayersEnum.NONE);
     console.log('Snapshot:', this.cells, this.cellsLocked);
@@ -23,11 +21,5 @@ export class BoardSnapshot {
       y: Math.floor(firstAvailable / 3)
     }
     return move;
-  }
-
-  checkStatus() : ResultEnum {
-    if (didWon(this.cells)) return ResultEnum.WIN;
-    if (didLoose(this.cells)) return ResultEnum.LOOSE;
-    return ResultEnum.DRAW;
   }
 }

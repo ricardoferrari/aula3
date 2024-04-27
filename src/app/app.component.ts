@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Board } from './models/Board';
+import { PlayersEnum } from './enums/players.enum';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +14,12 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'aula3';
   workerStatus = '';
-  content: number[][] = [[0,0,0],[0,0,0],[0,0,0]];
+
+  content: Board = new Board([
+    [PlayersEnum.AI, PlayersEnum.HUMAN, PlayersEnum.HUMAN],
+    [PlayersEnum.NONE, PlayersEnum.AI, PlayersEnum.AI],
+    [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.AI]
+  ]);
 
   private worker: Worker | undefined;
   constructor() {
@@ -31,7 +38,7 @@ export class AppComponent {
   }
 
   setCell(x: number,y: number) {
-    this.content[y][x] = 1;
+    this.content.addMove(PlayersEnum.HUMAN, {x, y});
   }
 
 }

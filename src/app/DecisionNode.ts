@@ -1,8 +1,7 @@
 import { ResultEnum } from './enums/result.enum';
 import { PlayersEnum } from "./enums/players.enum";
 import { Move } from './interfaces/Move';
-import { BoardSnapshot } from './interfaces/BoardSnapshot';
-import { didWon } from './functions';
+import { BoardSnapshot } from './models/BoardSnapshot';
 
 export class DecisionNode {
 
@@ -14,6 +13,8 @@ export class DecisionNode {
 
   parent: DecisionNode | undefined;
 
+  status: ResultEnum = ResultEnum.DRAW;
+
   constructor(_player: PlayersEnum, _move: Move, _board: BoardSnapshot, _parent?: DecisionNode) {
     this.player = _player;
     this.move = _move;
@@ -21,8 +22,9 @@ export class DecisionNode {
     this.parent = _parent;
   }
 
-  check() {
-    console.log(this.board.checkStatus());
+  check(): ResultEnum {
+    this.status = this.board.checkStatus();
+    return this.status;
   }
 
 }
