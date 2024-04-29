@@ -9,7 +9,6 @@ export class BoardSnapshot extends Board {
     super(_cells);
     this.cellsLocked = Array(this.cells.flat.length).fill(false);
     this.cellsLocked = this.cells.flat(1).map(cell => cell !== PlayersEnum.NONE);
-    console.log('Snapshot:', this.cells, this.cellsLocked);
   }
 
   nextAvailableCell(): Move | false {
@@ -21,5 +20,19 @@ export class BoardSnapshot extends Board {
       y: Math.floor(firstAvailable / 3)
     }
     return move;
+  }
+
+  availableCells(): number {
+    return this.cellsLocked.filter(x => x === true).length;
+  }
+
+  override addMove(player: PlayersEnum, move: Move) {
+    super.addMove(player, move);
+    this.cellsLocked[move.y * 3 + move.x] = true;
+    // console.log('Test move:', move);
+  }
+
+  lockCell(move: Move) {
+    this.cellsLocked[move.y * 3 + move.x] = true;
   }
 }

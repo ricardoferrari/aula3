@@ -8,15 +8,6 @@ export function didLoose(virtualContent: PlayersEnum[][]): boolean {
   return someoneWonAnyColumn(PlayersEnum.HUMAN, virtualContent) || someoneWonAnyLine(PlayersEnum.HUMAN, virtualContent) || someoneWonAnyDiagonal(PlayersEnum.HUMAN, virtualContent);
 }
 
-export function getAvailableCells(cells: PlayersEnum[][]): number {
-  const available: number = cells
-                                  .flat(1)
-                                  .map(cell => (cell !== PlayersEnum.NONE) ? 0 : 1)
-                                  .map<number>(value => value)
-                                  .reduce((amount, x) => (amount + x));
-  return available;
-}
-
 export function someoneWonAnyLine(player: PlayersEnum, virtualContent: PlayersEnum[][]): boolean {
   const size = Math.sqrt(virtualContent.flat(1).length);
   for (let i = 0; i < size; i++) {
@@ -48,7 +39,7 @@ export function someoneWonAnyDiagonal(player: PlayersEnum, virtualContent: Playe
 
 export function nextRightIsEqual(x: number, y: number, virtualContent: PlayersEnum[][]): boolean {
   const size = Math.sqrt(virtualContent.flat(1).length);
-  if (x === (size - 1)) return virtualContent[y][x] === virtualContent[y][x+1];
+  if (x >= (size - 2)) return virtualContent[y][x] === virtualContent[y][x+1];
   return virtualContent[y][x] === virtualContent[y][x+1] && nextRightIsEqual(x+1, y, virtualContent);
 }
 

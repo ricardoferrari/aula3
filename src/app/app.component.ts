@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Board } from './models/Board';
 import { PlayersEnum } from './enums/players.enum';
+import { Move } from './interfaces/Move';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +14,12 @@ import { PlayersEnum } from './enums/players.enum';
 })
 export class AppComponent {
   title = 'aula3';
-  workerStatus = '';
+  move: Move = {x: 0, y: 0};
 
   content: Board = new Board([
-    [PlayersEnum.AI, PlayersEnum.HUMAN, PlayersEnum.HUMAN],
-    [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.AI],
-    [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.AI]
+    [PlayersEnum.AI, PlayersEnum.NONE, PlayersEnum.HUMAN],
+    [PlayersEnum.HUMAN, PlayersEnum.NONE, PlayersEnum.NONE],
+    [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.NONE]
   ]);
 
   private worker: Worker | undefined;
@@ -27,8 +28,9 @@ export class AppComponent {
       // Create a new
       this.worker = new Worker(new URL('./app.worker', import.meta.url));
       this.worker.onmessage = ({ data }) => {
-        this.workerStatus = data;
-        console.log(`page got message: ${data}`);
+        this.move = data;
+        this.content.addMove(PlayersEnum.AI, this.move);
+        console.log(`page got message: ${data.x}, ${data.y} from worker`);
       };
     }
   }

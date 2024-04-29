@@ -11,6 +11,19 @@ export class Board {
     this.cells = Array.from(_cells);
  }
 
+ cloneCells() {
+    const newCells = Array();
+
+    for (const line of this.cells) {
+      const newRow = Array();
+      for (const row of line) {
+        newRow.push(row);
+      }
+      newCells.push(newRow);
+    }
+    return newCells;
+  }
+
   checkStatus() : ResultEnum {
     if (didWon(this.cells)) return ResultEnum.WIN;
     if (didLoose(this.cells)) return ResultEnum.LOOSE;
@@ -18,10 +31,13 @@ export class Board {
   }
 
   addMove(player: PlayersEnum, move: Move) {
-    console.log('Board reset:', this.cells);
     if (this.cells[move.y][move.x] === PlayersEnum.NONE) {
       this.cells[move.y][move.x] = player;
     }
+  }
+
+  cleanMove(move: Move) {
+    this.cells[move.y][move.x] = PlayersEnum.NONE;
   }
 
   reset(size: number) {

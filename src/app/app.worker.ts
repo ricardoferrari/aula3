@@ -1,6 +1,7 @@
 import { DecisionNode } from './DecisionNode';
 import { PlayersEnum } from './enums/players.enum';
 import { ResultEnum } from './enums/result.enum';
+import { Move } from './interfaces/Move';
 import { BoardSnapshot } from './models/BoardSnapshot';
 
 addEventListener('message', ({ data }) => {
@@ -8,10 +9,32 @@ addEventListener('message', ({ data }) => {
   console.log('Worker received:', data);
   const initialBoard: BoardSnapshot = new BoardSnapshot(data.cells);
 
-  const decisionNode = new DecisionNode(PlayersEnum.AI, { x: 0, y: 0}, initialBoard);
-  console.log(decisionNode.board.nextAvailableCell());
-  const result: ResultEnum = decisionNode.check();
 
+  let nextMove = initialBoard.nextAvailableCell();
+  let bestMove: Move | false = nextMove;
+  let bestScore: number = 0;
+
+  while (nextMove) {
+    const cells = initialBoard.cloneCells();
+    const tempDecisionNode = new DecisionNode(PlayersEnum.AI, nextMove, cells);
+    const score = tempDecisionNode.updateScore();
+    console.log('Decision:', tempDecisionNode);
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = nextMove;
+    }
+    initialBoard.lockCell(nextMove);
+    nextMove = initialBoard.nextAvailableCell();
+  }
+
+  console.log('Movimento:', bestMove, bestScore);
+
+  if(bestMove !== false) {
+    postMessage(bestMove);
+  }
+
+
+  let result = initialBoard.checkStatus();
   let response = '';
   switch (result) {
     case ResultEnum.WIN:
@@ -24,5 +47,5 @@ addEventListener('message', ({ data }) => {
       response = 'Draw';
       break;
   }
-  postMessage(response);
+  // postMessage(response);
 });
