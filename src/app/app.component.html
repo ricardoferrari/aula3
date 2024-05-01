@@ -4,6 +4,7 @@
       *ngFor="let col of [0, 1, 2]; let i"
       class="cell"
       [ngClass]="{ 'black': (row + col) % 2 === 0 }"
+      (keypress)="setCell(i,j)"
       (click)="setCell(i,j)">
         {{ content.cells[j][i] }}
     </div>
@@ -12,3 +13,5 @@
 
 <button (click)="runWorker()">Check Result</button>
 <button (click)="resetBoard()">Reset</button>
+
+<p>{{ message }}</p>

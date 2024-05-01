@@ -46,8 +46,19 @@ export class DecisionNode {
     return status;
   }
 
+  getCurrentScore(): number {
+    const status = this.board.checkStatus();
+    if (status === ResultEnum.WIN) {
+      return 1;
+    } else if (status === ResultEnum.LOOSE) {
+      return -1;
+    }
+    return 0;
+  }
+
   check() {
     this.status = this.getCurrentResults();
+    this.score = this.getCurrentScore();
     if (this.status === ResultEnum.DRAW && this.board.availableCells() > 0) {
       this.drillDownScore();
     }
@@ -79,9 +90,9 @@ export class DecisionNode {
     let sum = 0;
     for (const child of this.childs.values()) {
       const score = child.updateScore();
-      if ((score < 0) && (this.player === PlayersEnum.AI)) {
-        this.score = -1;
-        return this.score;
+      if ((score === -1) && (this.player === PlayersEnum.AI)) {
+        this.score -= 1;
+        return -1;
       }
       sum += score;
     }

@@ -12,18 +12,18 @@ addEventListener('message', ({ data }) => {
 
   let nextMove = initialBoard.nextAvailableCell();
   let bestMove: Move | false = nextMove;
-  let bestScore: number = 0;
+  let bestScore: number = -Infinity;
 
   while (nextMove) {
+    initialBoard.lockCell(nextMove);
     const cells = initialBoard.cloneCells();
     const tempDecisionNode = new DecisionNode(PlayersEnum.AI, nextMove, cells);
     const score = tempDecisionNode.updateScore();
-    console.log('Decision:', tempDecisionNode);
+    console.log('Decision:', score, nextMove, tempDecisionNode);
     if (score > bestScore) {
       bestScore = score;
       bestMove = nextMove;
     }
-    initialBoard.lockCell(nextMove);
     nextMove = initialBoard.nextAvailableCell();
   }
 
@@ -33,19 +33,4 @@ addEventListener('message', ({ data }) => {
     postMessage(bestMove);
   }
 
-
-  let result = initialBoard.checkStatus();
-  let response = '';
-  switch (result) {
-    case ResultEnum.WIN:
-      response = 'AI wins';
-      break;
-    case ResultEnum.LOOSE:
-      response = 'AI looses';
-      break;
-    case ResultEnum.DRAW:
-      response = 'Draw';
-      break;
-  }
-  // postMessage(response);
 });

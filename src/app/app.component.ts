@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { Board } from './models/Board';
 import { PlayersEnum } from './enums/players.enum';
 import { Move } from './interfaces/Move';
+import { ResultEnum } from './enums/result.enum';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ import { Move } from './interfaces/Move';
 export class AppComponent {
   title = 'aula3';
   move: Move = {x: 0, y: 0};
+  message: string = '';
 
   content: Board = new Board([
     [PlayersEnum.AI, PlayersEnum.NONE, PlayersEnum.HUMAN],
@@ -30,6 +32,19 @@ export class AppComponent {
       this.worker.onmessage = ({ data }) => {
         this.move = data;
         this.content.addMove(PlayersEnum.AI, this.move);
+        let result = this.content.checkStatus();
+
+        switch (result) {
+          case ResultEnum.WIN:
+            this.message = 'Você perdeu!';
+            break;
+          case ResultEnum.LOOSE:
+            this.message = 'Você ganhou!';
+            break;
+          case ResultEnum.DRAW:
+            this.message = 'Empate!';
+            break;
+        }
         console.log(`page got message: ${data.x}, ${data.y} from worker`);
       };
     }
