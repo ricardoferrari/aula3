@@ -1,17 +1,25 @@
-<div class="chessboard">
+<div class="chessboard" [ngClass]="{ended: isEnd}">
   <div *ngFor="let row of [0, 1, 2]; let j" class="row">
     <div
       *ngFor="let col of [0, 1, 2]; let i"
       class="cell"
-      [ngClass]="{ 'black': (row + col) % 2 === 0 }"
-      (keypress)="setCell(i,j)"
-      (click)="setCell(i,j)">
+      [ngClass]="{
+        'red': result === resultEnum.WIN && paintedCell(row,col) === true,
+        'green': result === resultEnum.LOOSE && paintedCell(row,col) === true,
+        'black': (row + col) % 2 === 0
+      }"
+      (keypress)="setCell(col,row)"
+      (click)="setCell(col,row)">
         {{ content.cells[j][i] }}
     </div>
   </div>
 </div>
 
-<button (click)="runWorker()">Check Result</button>
-<button (click)="resetBoard()">Reset</button>
+<button (click)="runWorker()" [disabled]="isProcessing">Jogue Robô!</button>
+<button (click)="resetBoard()" [disabled]="isProcessing">Reiniciar</button>
 
 <p>{{ message }}</p>
+
+@if (isProcessing) {
+  <p>Processing...</p>
+}

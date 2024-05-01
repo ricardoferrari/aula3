@@ -22,14 +22,13 @@ export class BoardSnapshot extends Board {
     return move;
   }
 
-  availableCells(): number {
+  availableUnlockedCells(): number {
     return this.cellsLocked.filter(x => x === true).length;
   }
 
   override addMove(player: PlayersEnum, move: Move) {
     super.addMove(player, move);
     this.cellsLocked[move.y * 3 + move.x] = true;
-    // console.log('Test move:', move);
   }
 
   lockCell(move: Move) {

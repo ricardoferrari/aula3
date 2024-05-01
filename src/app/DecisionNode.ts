@@ -59,7 +59,7 @@ export class DecisionNode {
   check() {
     this.status = this.getCurrentResults();
     this.score = this.getCurrentScore();
-    if (this.status === ResultEnum.DRAW && this.board.availableCells() > 0) {
+    if (this.status === ResultEnum.DRAW && this.board.availableUnlockedCells() > 0) {
       this.drillDownScore();
     }
   }

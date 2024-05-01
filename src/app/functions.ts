@@ -28,13 +28,14 @@ export function someoneWonAnyColumn(player: PlayersEnum, virtualContent: Players
 
 export function someoneWonAnyDiagonal(player: PlayersEnum, virtualContent: PlayersEnum[][]): boolean {
   const size = Math.sqrt(virtualContent.flat(1).length);
+  let diagonal = false;
   if (virtualContent[0][size-1] === player) {
-    return nextDiagonalInvertedIsEqual(size-1, 0, virtualContent);
+    diagonal = nextDiagonalInvertedIsEqual(size-1, 0, virtualContent);
   };
   if (virtualContent[0][0] === player) {
-    return nextDiagonalIsEqual(0, 0, virtualContent);
+    diagonal = nextDiagonalIsEqual(0, 0, virtualContent);
   }
-  return false;
+  return diagonal;
 }
 
 export function nextRightIsEqual(x: number, y: number, virtualContent: PlayersEnum[][]): boolean {
@@ -59,4 +60,33 @@ export function nextDiagonalInvertedIsEqual(x: number, y: number, virtualContent
   const size = Math.sqrt(virtualContent.flat(1).length);
   if (y >= (size - 2)) return virtualContent[y][x] === virtualContent[y+1][x-1];
   return virtualContent[y][x] === virtualContent[y+1][x-1] && nextDiagonalInvertedIsEqual(x-1, y+1, virtualContent);
+}
+
+export function whichColumnWon(virtualContent: PlayersEnum[][]): number | false {
+  const size = Math.sqrt(virtualContent.flat(1).length);
+  for (let i = 0; i < size; i++) {
+    if (virtualContent[0][i] === PlayersEnum.NONE) continue;
+    if (nextBelowIsEqual(i, 0, virtualContent)) return i;
+  }
+  return false;
+}
+
+export function whichLineWon(virtualContent: PlayersEnum[][]): number | false {
+  const size = Math.sqrt(virtualContent.flat(1).length);
+  for (let i = 0; i < size; i++) {
+    if (virtualContent[i][0] === PlayersEnum.NONE) continue;
+    if (nextRightIsEqual(0, i, virtualContent)) return i;
+  }
+  return false;
+}
+
+export function diagonalInvertedWon(virtualContent: PlayersEnum[][]): boolean {
+  const size = Math.sqrt(virtualContent.flat(1).length);
+  if (virtualContent[0][size-1] === PlayersEnum.NONE) return false;
+  return nextDiagonalInvertedIsEqual(size-1, 0, virtualContent);
+}
+
+export function diagonalWon(virtualContent: PlayersEnum[][]): boolean {
+  if (virtualContent[0][0] === PlayersEnum.NONE) return false;
+  return nextDiagonalIsEqual(0, 0, virtualContent);
 }
