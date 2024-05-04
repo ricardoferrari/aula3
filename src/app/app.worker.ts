@@ -27,6 +27,10 @@ addEventListener('message', ({ data }) => {
     const tempDecisionNode = new DecisionNode(PlayersEnum.AI, nextMove, cells);
     const score = tempDecisionNode.updateScore();
     // console.log('Decision:', score, nextMove, tempDecisionNode);
+    if (tempDecisionNode.didIAWon()) {
+      bestMove = nextMove;
+      break;
+    }
     if (score > bestScore) {
       bestScore = score;
       bestMove = nextMove;

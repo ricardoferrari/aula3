@@ -33,7 +33,7 @@ export function someoneWonAnyDiagonal(player: PlayersEnum, virtualContent: Playe
     diagonal = nextDiagonalInvertedIsEqual(size-1, 0, virtualContent);
   };
   if (virtualContent[0][0] === player) {
-    diagonal = nextDiagonalIsEqual(0, 0, virtualContent);
+    diagonal = nextDiagonalIsEqual(0, 0, virtualContent) || diagonal;
   }
   return diagonal;
 }

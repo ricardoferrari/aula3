@@ -5,7 +5,7 @@ import { BoardSnapshot } from './models/BoardSnapshot';
 
 export class DecisionNode {
 
-  identifier: number = 0;
+  identifier: string = 'UNDEFINED';
   player: PlayersEnum;
   result: ResultEnum = ResultEnum.DRAW;
   score: number = 0;
@@ -13,17 +13,17 @@ export class DecisionNode {
   board: BoardSnapshot;
 
   parent: DecisionNode | undefined;
-  childs: Map<number, DecisionNode> = new Map<number, DecisionNode>();
+  childs: Map<string, DecisionNode> = new Map<string, DecisionNode>();
 
   status: ResultEnum = ResultEnum.DRAW;
 
-  constructor(_player: PlayersEnum, _move: Move, _board: PlayersEnum[][], _parent?: DecisionNode, _identifier?: number) {
+  constructor(_player: PlayersEnum, _move: Move, _board: PlayersEnum[][], _parent?: DecisionNode, _identifier?: string) {
     this.player = _player;
     this.board = new BoardSnapshot(_board);
     this.move = _move;
     this.board.addMove(this.player, this.move);
     this.parent = _parent;
-    this.identifier = _identifier ?? 0;
+    this.identifier = _identifier ?? 'UNDEFINED';
   }
 
   addParent(parent: DecisionNode) {
@@ -35,39 +35,34 @@ export class DecisionNode {
   }
 
   getCurrentResults(): ResultEnum {
-    const status = this.board.checkStatus();
-    if (status === ResultEnum.WIN) {
-      this.score = 1;
-    } else if (status === ResultEnum.LOOSE) {
-      this.score = -1;
-    } else {
-      this.score = 0;
-    }
-    return status;
+    return this.board.checkStatus();
   }
 
-  getCurrentScore(): number {
-    const status = this.board.checkStatus();
-    if (status === ResultEnum.WIN) {
+  getCurrentScore(result: ResultEnum): number {
+    if (result === ResultEnum.WIN) {
       return 1;
-    } else if (status === ResultEnum.LOOSE) {
+    } else if (result === ResultEnum.LOOSE) {
       return -1;
     }
     return 0;
   }
 
+  didIAWon(): boolean {
+    return this.status === ResultEnum.WIN;
+  }
+
   check() {
     this.status = this.getCurrentResults();
-    this.score = this.getCurrentScore();
-    if (this.status === ResultEnum.DRAW && this.board.availableUnlockedCells() > 0) {
+    this.score = this.getCurrentScore(this.status);
+    if ((this.status === ResultEnum.DRAW) && (this.board.availableUnlockedCells() > 0)) {
       this.drillDownScore();
     }
   }
 
   drillDownScore() {
     let nextMove = this.board.nextAvailableCell();
-    let identifierIterator = this.identifier + 1;
     while (nextMove) {
+      let identifierIterator = 'move' + (nextMove ? nextMove.x + '_' + nextMove.y : 'INITIAL' + this.move.x + '_' + this.move.y);
       this.board.lockCell(nextMove);
 
       const cells = this.board.cloneCells();
@@ -78,7 +73,6 @@ export class DecisionNode {
       this.addChild(nextNode);
 
       nextMove = this.board.nextAvailableCell();
-      identifierIterator++;
     }
   }
 
