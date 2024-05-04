@@ -30,6 +30,10 @@ export class AppComponent {
   ]);
 
   painted: boolean[][] = [[false, false, false], [false, false, false], [false, false, false]];
+  surprise: boolean[][] = [[false, false, false], [false, false, false], [false, false, false]];
+  replay: boolean = false;
+
+  currentPlayer: PlayersEnum = PlayersEnum.HUMAN;
 
   private worker: Worker | undefined;
   constructor() {
@@ -41,14 +45,31 @@ export class AppComponent {
         this.move = data;
         this.content.addMove(PlayersEnum.AI, this.move);
 
+        // NOTE: Check if the AI got an surprise cell
+        if (this.isSurpriseCell(this.move.x, this.move.y)) {
+          alert('O computador ganhou uma jogada extra!');
+          this.surprise[this.move.y][this.move.x] = false;
+          this.replay = true;
+        }
+
         this.checkStatus();
 
+
         console.log(`page got message: ${data.x}, ${data.y} from worker`);
+
+        // NOTE: Use AI replay
+        if (this.replay) {
+          this.replay = false;
+          this.runWorker();
+        } else {
+          this.tooglePlayer();
+        }
       };
     }
   }
 
   runWorker() {
+    if (this.isEnd || this.isProcessing || (this.currentPlayer !== PlayersEnum.AI)) return;
     if (this.content.availableCells() > 0) {
       this.isProcessing = true;
       this.worker?.postMessage(this.content);
@@ -56,18 +77,33 @@ export class AppComponent {
   }
 
   resetBoard() {
+    this.addSurpriseCell();
     this.content.reset(3);
     this.painted = [[false, false, false], [false, false, false], [false, false, false]];
     this.message = '';
     this.isEnd = false;
+
+    if (this.currentPlayer === PlayersEnum.AI) {
+      this.runWorker();
+    }
   }
 
   setCell(x: number,y: number) {
-    if (this.isEnd || this.isProcessing) return;
+    if (this.isEnd || this.isProcessing || (this.currentPlayer !== PlayersEnum.HUMAN)) return;
+    if (this.isSurpriseCell(x, y)) {
+      alert('Você ganhou uma jogada extra!');
+      this.surprise[y][x] = false;
+      this.replay = true;
+    }
+
     this.content.addMove(PlayersEnum.HUMAN, {x, y});
     this.checkStatus();
     // NOTE: Write after the human plays then run the worker
-    this.runWorker();
+    if (this.replay) {
+      this.replay = false;
+    } else {
+      this.tooglePlayer();
+    }
   }
 
   checkStatus() {
@@ -95,6 +131,23 @@ export class AppComponent {
 
   paintedCell(x: number, y: number): boolean {
     return this.painted[y][x];
+  }
+
+  isSurpriseCell(x: number, y: number): boolean {
+    return this.surprise[y][x];
+  }
+
+  addSurpriseCell() {
+    const x = Math.floor(Math.random() * 3);
+    const y = Math.floor(Math.random() * 3);
+    this.surprise[y][x] = true;
+  }
+
+  tooglePlayer() {
+    this.currentPlayer = this.currentPlayer === PlayersEnum.HUMAN ? PlayersEnum.AI : PlayersEnum.HUMAN;
+    if (this.currentPlayer === PlayersEnum.AI) {
+      this.runWorker();
+    }
   }
 
 }

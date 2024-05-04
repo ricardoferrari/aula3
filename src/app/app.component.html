@@ -2,15 +2,15 @@
   <div *ngFor="let row of [0, 1, 2]; let j" class="row">
     <div
       *ngFor="let col of [0, 1, 2]; let i"
-      class="cell"
       [ngClass]="{
         'red': result === resultEnum.WIN && paintedCell(row,col) === true,
         'green': result === resultEnum.LOOSE && paintedCell(row,col) === true,
         'black': (row + col) % 2 === 0
       }"
+      [class]="isSurpriseCell(col, row) ? 'cell surprise' : 'cell'"
       (keypress)="setCell(col,row)"
       (click)="setCell(col,row)">
-        {{ content.cells[j][i] }}
+        {{ (content.cells[j][i] === 0) ? '&nbsp;' : content.cells[j][i] }}
     </div>
   </div>
 </div>
