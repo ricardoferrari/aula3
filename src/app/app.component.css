@@ -29,7 +29,8 @@
 }
 
 .surprise {
-    background-color: #00f;
+    background-color: #ff0;
     color: #fff;
     background-image: url('https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bolt-128.png');
+    background-size: contain;
 }

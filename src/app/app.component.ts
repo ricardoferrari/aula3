@@ -88,6 +88,12 @@ export class AppComponent {
     }
   }
 
+  shuffleBoard() {
+    if (this.isEnd || this.isProcessing) return;
+    this.content.shuffle();
+    this.checkStatus();
+  }
+
   setCell(x: number,y: number) {
     if (this.isEnd || this.isProcessing || (this.currentPlayer !== PlayersEnum.HUMAN)) return;
     if (this.isSurpriseCell(x, y)) {

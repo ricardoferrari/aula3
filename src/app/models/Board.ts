@@ -83,4 +83,14 @@ export class Board {
       [PlayersEnum.NONE, PlayersEnum.NONE, PlayersEnum.NONE]
     ];
   }
+
+  // NOTE: This method is used to shuffle the board
+  shuffle() {
+    const shuffled = this.cells.flat(1).sort(() => Math.random() - 0.5);
+    this.cells = [
+      [shuffled[0], shuffled[1], shuffled[2]],
+      [shuffled[3], shuffled[4], shuffled[5]],
+      [shuffled[6], shuffled[7], shuffled[8]]
+    ];
+  }
 }
