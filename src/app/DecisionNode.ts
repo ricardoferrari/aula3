@@ -86,24 +86,10 @@ export class DecisionNode {
       return this.score;
     }
     let sum = 0;
-    // NOTE Firstly, we check if the AI has lost in any of the next possible moves
-    if (this.player === PlayersEnum.AI) {
-      let lowestScore = 0;
-      for (const child of this.childs.values()) {
-        const score = child.updateScore();
-        if (score < lowestScore) {
-          lowestScore = score;
-        }
-      }
-      return lowestScore;
-    }
-    // NOTE: If the AI has not lost, we calculate the average of the scores
+
     for (const child of this.childs.values()) {
       const score: number = child.updateScore();
-      if (score < 0) {
-        this.score -= score;
-        return score;
-      }
+
 
       sum += score;
     }
