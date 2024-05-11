@@ -14,6 +14,7 @@ export class DecisionNode {
 
   parent: DecisionNode | undefined;
   childs: Map<string, DecisionNode> = new Map<string, DecisionNode>();
+  deepness: number = 0;
 
   status: ResultEnum = ResultEnum.DRAW;
 
@@ -24,6 +25,7 @@ export class DecisionNode {
     this.board.addMove(this.player, this.move);
     this.parent = _parent;
     this.identifier = _identifier ?? 'UNDEFINED';
+    this.deepness = _parent ? _parent.deepness + 1 : 0;
   }
 
   addParent(parent: DecisionNode) {
@@ -42,7 +44,9 @@ export class DecisionNode {
     if (result === ResultEnum.WIN) {
       return 1;
     } else if (result === ResultEnum.LOOSE) {
-      return -1;
+      // NOTE: If the AI looses, it will try to avoid this move when it is its turn
+      const loosingCost = 9 - this.deepness;
+      return -loosingCost;
     }
     return 0;
   }
@@ -82,12 +86,25 @@ export class DecisionNode {
       return this.score;
     }
     let sum = 0;
-    for (const child of this.childs.values()) {
-      const score = child.updateScore();
-      if ((score === -1) && (this.player === PlayersEnum.AI)) {
-        this.score -= 1;
-        return -1;
+    // NOTE Firstly, we check if the AI has lost in any of the next possible moves
+    if (this.player === PlayersEnum.AI) {
+      let lowestScore = 0;
+      for (const child of this.childs.values()) {
+        const score = child.updateScore();
+        if (score < lowestScore) {
+          lowestScore = score;
+        }
       }
+      return lowestScore;
+    }
+    // NOTE: If the AI has not lost, we calculate the average of the scores
+    for (const child of this.childs.values()) {
+      const score: number = child.updateScore();
+      if (score < 0) {
+        this.score -= score;
+        return score;
+      }
+
       sum += score;
     }
     this.score = sum / this.childs.size;
